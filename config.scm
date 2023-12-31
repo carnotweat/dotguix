@@ -9,9 +9,22 @@
 
 ;; Indicate which modules to import to access the variables
 ;; used in this configuration.
-(use-modules (gnu))
+(use-modules
+ (gnu)
+ (gnu system nss)
+ (gnu packages tmux)
+ (gnu packages xdisorg)
+ (gnu packages image)
+ (gnu packages shells)
+ (gnu packages authentication)
+ (gnu packages gnupg)
+ (gnu packages cryptsetup)
+ (gnu packages web-browsers) 
+;; (gnu packages version-conrol)
+ )
 (use-service-modules cups desktop networking ssh xorg)
 
+(use-package-modules bootloaders certs emacs emacs-xyz ratpoison suckless wm)
 (operating-system
   (locale "en_IN.utf8")
   (timezone "Asia/Kolkata")
@@ -30,43 +43,64 @@
   ;; Packages installed system-wide.  Users can also install packages
   ;; under their own account: use 'guix search KEYWORD' to search
   ;; for packages and 'guix install PACKAGE' to install a package.
-  (packages (append (list (specification->package "i3-wm")
-                          (specification->package "i3status")
-                          (specification->package "dmenu")
-                          (specification->package "st")
-                          (specification->package "emacs")
-                          (specification->package "emacs-exwm")
-                          (specification->package
-                           "emacs-desktop-environment")) %base-packages))
+  (packages (append (list
+		      ;; window managers
+                     i3-wm i3status dmenu rofi
+                     emacs 
+                     ;; terminal emulator
+                     st tabbed tmux fish oath-toolkit
+		     ;; vcs
+		     ;;cgit
+		     ;; utils
+		     flameshot
+		     ;; auth
+		     gnupg
+		     pinentry
+		     ;;system
+		     cryptsetup
+		     ;; browser
+		     nyxt
+                     ;; for HTTPS access
+                     nss-certs)
+                    %base-packages))
+		     ;; (specification->package "i3-wm")
+                    ;;       (specification->package "i3status")
+                    ;;       (specification->package "dmenu")
+                    ;;       (specification->package "st")
+                    ;;       (specification->package "nss-certs"))
+                    ;; %base-packages))
 
   ;; Below is the list of system services.  To search for available
   ;; services, run 'guix system search KEYWORD' in a terminal.
   (services
-   (append (list (service enlightenment-desktop-service-type)
+   (append (list
 
                  ;; To configure OpenSSH, pass an 'openssh-configuration'
                  ;; record as a second argument to 'service' below.
                  (service openssh-service-type)
                  (service tor-service-type)
                  (service cups-service-type)
+		 ;;(service cgit-service-type)
                  (set-xorg-configuration
                   (xorg-configuration (keyboard-layout keyboard-layout))))
 
            ;; This is the default list of services we
            ;; are appending to.
            %desktop-services))
+  ;;(service cgit-service-type)
+  ;;(name-service-switch %mdns-host-lookup-nss))
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
                 (targets (list "/boot/efi"))
                 (keyboard-layout keyboard-layout)))
   (mapped-devices (list (mapped-device
                           (source (uuid
-                                   "f8d8af1d-9348-46bb-8541-5396ba1db04e"))
+                                   "0964fce5-eb40-4bf2-bc93-8bb4675c0a11"))
                           (target "cryptroot")
                           (type luks-device-mapping))
                         (mapped-device
                           (source (uuid
-                                   "57dff125-d921-4b54-9a03-a3dd2657f49c"))
+                                   "81f4227a-5471-43ff-8a86-608a94168ea8"))
                           (target "crypthome")
                           (type luks-device-mapping))))
 
@@ -75,7 +109,7 @@
   ;; by running 'blkid' in a terminal.
   (file-systems (cons* (file-system
                          (mount-point "/boot/efi")
-                         (device (uuid "8062-940F"
+                         (device (uuid "8B04-75F4"
                                        'fat32))
                          (type "vfat"))
                        (file-system
