@@ -12,19 +12,31 @@
 (use-modules
  (gnu)
  (gnu system nss)
+ (gnu packages linux)
  (gnu packages tmux)
  (gnu packages xdisorg)
+ (gnu packages gstreamer)
+ (gnu packages gnome)
+ (gnu packages autotools)
  (gnu packages image)
  (gnu packages shells)
+ (gnu packages admin)
+ (gnu packages bittorrent)
  (gnu packages authentication)
+ (gnu packages tls)
  (gnu packages gnupg)
  (gnu packages cryptsetup)
  (gnu packages web-browsers) 
-;; (gnu packages version-conrol)
+ (gnu packages version-control)
+ (gnu packages haskell)
+ (gnu packages guile-xyz)
+ (gnu packages ocaml)
+ (gnu packages rust)
  )
 (use-service-modules cups desktop networking ssh xorg)
 
-(use-package-modules bootloaders certs emacs emacs-xyz ratpoison suckless wm)
+(use-package-modules bootloaders certs emacs emacs-xyz haskell
+		     haskell-xyz ratpoison suckless wm)
 (operating-system
   (locale "en_IN.utf8")
   (timezone "Asia/Kolkata")
@@ -48,18 +60,48 @@
                      i3-wm i3status dmenu rofi
                      emacs 
                      ;; terminal emulator
-                     st tabbed tmux fish oath-toolkit
+                     st tabbed tmux fish oath-toolkit tree aria2
+		     zsh emacs-vterm emacs-rustic emacs-ox-hugo
+		     emacs-org-webring emacs-haskell-snippets
+		     emacs-haskell-snippets emacs-org-roam
+		     emacs-haskell-mode
 		     ;; vcs
-		     ;;cgit
+		     cgit
+		     git
+		     linux-libre-headers
+		     ;;gcc-toolchain
+		     libtool
+		     ;;sqlite3
+		     xclip
+		     ;;dev
+		     ghc
+		     ;;hugo
+		     ;;agda
+		     ocaml
+		     guile-hall
+		     ;;rustc
+		     ;;rust-rustc-rayon
+		     ;;rust-cargo
 		     ;; utils
 		     flameshot
 		     ;; auth
 		     gnupg
 		     pinentry
+		     openssl
 		     ;;system
 		     cryptsetup
 		     ;; browser
-		     nyxt
+		      emacs-telega-server emacs-telega
+		     emacs-mastodon emacs-ement emacs-nyxt
+		     ;; plugins
+		     gst-plugins-good
+		     gst-plugins-bad
+		     gst-libav
+		     gst-plugins-ugly
+		     gst-plugins-base
+		     rhythmbox gst123
+		     gstreamer
+		     ;;emacs-agda2-mode
                      ;; for HTTPS access
                      nss-certs)
                     %base-packages))
