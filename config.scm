@@ -1,42 +1,15 @@
-;; This is an operating system configuration generated
-;; by the graphical installer.
-;;
-;; Once installation is complete, you can learn and modify
-;; this file to tweak the system configuration, and pass it
-;; to the 'guix system reconfigure' command to effect your
-;; changes.
-
-
-;; Indicate which modules to import to access the variables
-;; used in this configuration.
+;;- TODO- split as base-os.scm+user.scm+module.scm
 (use-modules
  (gnu)
  (gnu system nss)
- (gnu packages linux)
- (gnu packages tmux)
- (gnu packages xdisorg)
- (gnu packages gstreamer)
- (gnu packages gnome)
- (gnu packages autotools)
- (gnu packages image)
- (gnu packages shells)
- (gnu packages admin)
- (gnu packages bittorrent)
- (gnu packages authentication)
- (gnu packages tls)
- (gnu packages gnupg)
- (gnu packages cryptsetup)
- (gnu packages web-browsers) 
- (gnu packages version-control)
- (gnu packages haskell)
- (gnu packages guile-xyz)
- (gnu packages ocaml)
- (gnu packages rust)
+ (nongnu packages linux)
  )
-(use-service-modules cups desktop networking ssh xorg)
 
-(use-package-modules bootloaders certs emacs emacs-xyz haskell
-		     haskell-xyz ratpoison suckless wm)
+(use-service-modules sysctl admin monitoring admin networking nix cups desktop ssh xorg cgit security-token )
+
+(use-package-modules shells rust ocaml guile-xyz haskell version-control web-browsers cryptsetup gnupg dns tls authentication bittorrent admin shells image autotools gnome
+screen ssh tmux bootloaders certs emacs emacs-xyz haskell vpn avahi gstreamer xdisorg linux haskell-xyz ratpoison suckless wm certs )
+
 (operating-system
   (locale "en_IN.utf8")
   (timezone "Asia/Kolkata")
@@ -52,85 +25,66 @@
                   (supplementary-groups '("wheel" "netdev" "audio" "video")))
                 %base-user-accounts))
 
-  ;; Packages installed system-wide.  Users can also install packages
-  ;; under their own account: use 'guix search KEYWORD' to search
-  ;; for packages and 'guix install PACKAGE' to install a package.
-  (packages (append (list
-		      ;; window managers
-                     i3-wm i3status dmenu rofi
-                     emacs 
-                     ;; terminal emulator
-                     st tabbed tmux fish oath-toolkit tree aria2
-		     zsh emacs-vterm emacs-rustic emacs-ox-hugo
-		     emacs-org-webring emacs-haskell-snippets
-		     emacs-haskell-snippets emacs-org-roam
-		     emacs-haskell-mode
-		     ;; vcs
-		     cgit
-		     git
-		     linux-libre-headers
-		     ;;gcc-toolchain
-		     libtool
-		     ;;sqlite3
-		     xclip
-		     ;;dev
-		     ghc
-		     ;;hugo
-		     ;;agda
-		     ocaml
-		     guile-hall
-		     ;;rustc
-		     ;;rust-rustc-rayon
-		     ;;rust-cargo
-		     ;; utils
-		     flameshot
-		     ;; auth
-		     gnupg
-		     pinentry
-		     openssl
-		     ;;system
-		     cryptsetup
-		     ;; browser
-		      emacs-telega-server emacs-telega
-		     emacs-mastodon emacs-ement emacs-nyxt
-		     ;; plugins
-		     gst-plugins-good
-		     gst-plugins-bad
-		     gst-libav
-		     gst-plugins-ugly
-		     gst-plugins-base
-		     rhythmbox gst123
-		     gstreamer
-		     ;;emacs-agda2-mode
-                     ;; for HTTPS access
-                     nss-certs)
-                    %base-packages))
-		     ;; (specification->package "i3-wm")
-                    ;;       (specification->package "i3status")
-                    ;;       (specification->package "dmenu")
-                    ;;       (specification->package "st")
-                    ;;       (specification->package "nss-certs"))
-                    ;; %base-packages))
-
+(packages (append (list
+	  ;; window managers
+          i3-wm i3status dmenu rofi
+          emacs 
+          ;; terminal emulator
+          st tabbed tmux fish oath-toolkit tree aria2
+	  zsh emacs-vterm emacs-rustic emacs-ox-hugo
+	  emacs-org-webring emacs-haskell-snippets
+	  emacs-haskell-snippets emacs-org-roam
+	  emacs-haskell-mode 
+	  ;; vcs
+	  cgit git
+	  linux-libre-headers
+	  nss-mdns
+	  ;;gcc-toolchain
+	  libtool
+	  ;;dev
+	  ghc ocaml guile-hall
+	  ;; utils
+	  flameshot xclip
+	  ;; auth
+	  gnupg pinentry openssl cryptsetup badvpn  
+	  network-manager-openvpn openvpn wireguard-tools
+	  
+	  ;; browser
+	  emacs-telega-server emacs-telega
+	  emacs-mastodon emacs-ement emacs-nyxt
+	  ;; plugins
+	  gst-plugins-good gst-plugins-bad
+	  gst-plugins-base gst-libav
+	  gst-plugins-ugly gst-plugins-base
+	  rhythmbox gst123 gstreamer
+          ;; for HTTPS access
+          nss-certs)
+     ;;(cons (list isc-bind "utils")
+     %base-packages))
+   
   ;; Below is the list of system services.  To search for available
   ;; services, run 'guix system search KEYWORD' in a terminal.
   (services
-   (append (list
-
-                 ;; To configure OpenSSH, pass an 'openssh-configuration'
-                 ;; record as a second argument to 'service' below.
-                 (service openssh-service-type)
-                 (service tor-service-type)
-                 (service cups-service-type)
-		 ;;(service cgit-service-type)
-                 (set-xorg-configuration
-                  (xorg-configuration (keyboard-layout keyboard-layout))))
-
-           ;; This is the default list of services we
-           ;; are appending to.
-           %desktop-services))
-  ;;(service cgit-service-type)
-  ;;(name-service-switch %mdns-host-lookup-nss))
+   (append (list	    
+	    (service openssh-service-type
+                     (openssh-configuration
+                      (openssh openssh-sans-x)
+                      (port-number 2222)))
+	   (service tor-service-type)
+           (service cups-service-type)
+	   (service nix-service-type)
+	   (service cgit-service-type)
+           (set-xorg-configuration
+            (xorg-configuration (keyboard-layout keyboard-layout))))
+	   ;;%desktop-services))
+             (modify-services %desktop-services
+             (elogind-service-type
+               config =>
+                 (elogind-configuration
+		   (inherit config)
+                   (handle-power-key 'suspend)
+                   (handle-lid-switch-external-power 'suspend))))))
+	    ;;bootloader
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
                 (targets (list "/boot/efi"))
@@ -146,9 +100,8 @@
                           (target "crypthome")
                           (type luks-device-mapping))))
 
-  ;; The list of file systems that get "mounted".  The unique
-  ;; file system identifiers there ("UUIDs") can be obtained
-  ;; by running 'blkid' in a terminal.
+
+  ;;(kernel-arguments (list "console=ttyS0,115200"))
   (file-systems (cons* (file-system
                          (mount-point "/boot/efi")
                          (device (uuid "8B04-75F4"
@@ -164,3 +117,6 @@
                          (device "/dev/mapper/crypthome")
                          (type "ext4")
                          (dependencies mapped-devices)) %base-file-systems)))
+;; (swap-devices (list (swap-space
+;;                        (target "/swapfile"))))
+
